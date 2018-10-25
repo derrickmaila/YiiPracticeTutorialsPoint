@@ -199,32 +199,93 @@ class SiteController extends Controller
     public function actionTestBasics(){
 
         //the URL without the host
-        var_dump(Yii::$app->request->url);
+        echo "<br> URL = ". Yii::$app->request->url ."<br>";
 
         //the whole URL including the host path
-        var_dump(Yii::$app->request->absoluteUrl);
+        echo "<br> ABSOLUTE  PATH = ". Yii::$app->request->absoluteUrl."<br>";
+
+        //the whole URL including the host path
+        echo "<br> GET PATH INFO  = ". Yii::$app->request->getPathInfo()."<br>";
 
         //the host of the URL
-        var_dump(Yii::$app->request->hostInfo);
+        echo "<br> HOST INFO = ". Yii::$app->request->hostInfo."<br>";
 
         //the part after the entry script and before the question mark
-        var_dump(Yii::$app->request->pathInfo);
+        echo "<br> PATH INFO = ". Yii::$app->request->pathInfo."<br>";
 
         //the part after the question mark
-        var_dump(Yii::$app->request->queryString);
+        echo "<br> QUERY STRING = ". Yii::$app->request->queryString."<br>";
 
         //the part after the host and before the entry script
-        var_dump(Yii::$app->request->baseUrl);
+        echo "<br> BASE URL = ". Yii::$app->request->baseUrl."<br>";
 
         //the URL without path info and query string
-        var_dump(Yii::$app->request->scriptUrl);
+        echo "<br> SCRIPT URL = ". Yii::$app->request->scriptUrl."<br>";
 
         //the host name in the URL
-        var_dump(Yii::$app->request->serverName);
+        echo "<br> SERVER NAME  = ". Yii::$app->request->serverName."<br>";
 
         //the port used by the web server
-        var_dump(Yii::$app->request->serverPort);
+        echo "<br> SERVER PORT = ". Yii::$app->request->serverPort."<br>";
+
+        echo "<pre> HEADERS = ".print_r(Yii::$app->request->headers,true)."</pre>";
+
+        echo "<br> USER HOST = ". Yii::$app->request->userHost."<br>";
+
+        echo "<br> USER IP = ". Yii::$app->request->userIP."<br>";
 
     }
+    public function actionGetHeaders(){
+        echo "<pre>".print_r(Yii::$app->request->headers,true)."</pre>";
+    }
+    public function actionTestResponse(){
+        return Yii::$app->response->statusCode = 201;
+    }
+    public function actionTestResponseheaders(){
+       return ii::$app->response->headers->add('Pragma', 'no-cache');
+    }
+    public function actionTestResponseformatjson(){
+       \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+       return [
+         'id' => '1',
+         'name' => 'Derrick',
+         'age' => 32,
+         'country' => 'South Africa',
+         'city' => 'Kempton Park'
+       ];
+    }
+    public function actionTestResponseformatxml(){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_XML;
+        return [
+            'id' => '1',
+            'name' => 'Derrick',
+            'age' => 32,
+            'country' => 'South Africa',
+            'city' => 'Kempton Park'
+        ];
+    }
+    public function actionTestRedirect() {
+        return $this->redirect('http://www.tutorialspoint.com/');
+    }
+    public function actionTestDownload() {
+        return \Yii::$app->response->sendFile('favicon.ico');
+    }
+
+    public function actionTestDownloadcontent() {
+        return \Yii::$app->response->sendContentAsFile("",'favicon.ico');
+    }
+
+    public function actionTestDownloadstream() {
+        return \Yii::$app->response->sendStreamAsFile("",'favicon.ico');
+    }
+
+    public function actionMaintenance(){
+        $msg = "Maintenance";
+        return $this->render("maintenance",["msg" => $msg] );
+    }
+    public function actionRoutes(){
+        return $this->render('routes');
+    }
+
 }
 
