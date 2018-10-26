@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\RegistrationFrom;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -204,9 +205,6 @@ class SiteController extends Controller
         //the whole URL including the host path
         echo "<br> ABSOLUTE  PATH = ". Yii::$app->request->absoluteUrl."<br>";
 
-        //the whole URL including the host path
-        echo "<br> GET PATH INFO  = ". Yii::$app->request->getPathInfo()."<br>";
-
         //the host of the URL
         echo "<br> HOST INFO = ". Yii::$app->request->hostInfo."<br>";
 
@@ -242,7 +240,7 @@ class SiteController extends Controller
         return Yii::$app->response->statusCode = 201;
     }
     public function actionTestResponseheaders(){
-       return ii::$app->response->headers->add('Pragma', 'no-cache');
+       return yii::$app->response->headers->add('Pragma', 'no-cache');
     }
     public function actionTestResponseformatjson(){
        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -285,6 +283,10 @@ class SiteController extends Controller
     }
     public function actionRoutes(){
         return $this->render('routes');
+    }
+    public function  actionRegistration(){
+        $mRegistration  =  new RegistrationFrom();
+        return $this->render('registration',['model' => $mRegistration]);
     }
 
 }
