@@ -4,12 +4,14 @@ namespace app\controllers;
 
 use app\models\RegistrationFrom;
 use Yii;
+use yii\base\DynamicModel;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\widgets\ActiveForm;
 
 class SiteController extends Controller
 {
@@ -237,7 +239,8 @@ class SiteController extends Controller
         echo "<pre>".print_r(Yii::$app->request->headers,true)."</pre>";
     }
     public function actionTestResponse(){
-        return Yii::$app->response->statusCode = 201;
+        return Yii
+            ::$app->response->statusCode = 201;
     }
     public function actionTestResponseheaders(){
        return yii::$app->response->headers->add('Pragma', 'no-cache');
@@ -286,7 +289,117 @@ class SiteController extends Controller
     }
     public function  actionRegistration(){
         $mRegistration  =  new RegistrationFrom();
+
+        if(Yii::$app->request->isAjax && $mRegistration->load(Yii::$app->request->post())){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($mRegistration);
+        }
         return $this->render('registration',['model' => $mRegistration]);
+    }
+    public  function actionAdHocValidation(){
+        $model  = DynamicModel::validateData([
+           'username' => 'Derrick Maila',
+           'email' => 'derrickmaila@gmail.com'
+        ],[
+            ['username','string','max' => 12],
+            ['email','email'],
+        ]);
+
+        if($model->hasErrors()){
+            var_dump($model->errors);
+        }else{
+            echo "success";
+        }
+    }
+    public function actionOpenAndCloseSession(){
+        $session  = Yii::$app->session;
+        //open session
+        $session->open();
+
+        if($session->isActive) echo "session is active";
+        $session->close();
+        $session->destroy();
+
+    }
+
+    public function actionAccessSession(){
+        $session =  Yii::$app->session;
+
+        // set a session variable
+        $session->set('language', 'en');
+
+        // get a session variable
+        $language = $session->get('language');
+        var_dump($language);
+
+        // remove a session variable
+        $session->remove('language');
+
+        // check if a session variable exists
+        if (!$session->has('language')) echo "language is not set";
+
+        $session['captcha'] = [
+            'value' => 'aSBS23',
+            'lifetime' => 7200,
+        ];
+        var_dump($session['captcha']);
+    }
+    public function actionShowFlash(){
+        $session  = Yii::$app->session;
+        //set a flash message named as "greeting"
+        $session->setFlash('greeting', 'Hello user!');
+        return $this->render('showflash');
+    }
+    public function actionReadCookies() {
+        // get cookies from the "request" component
+        $cookies = Yii::$app->request->cookies;
+        // get the "language" cookie value
+        // if the cookie does not exist, return "ru" as the default value
+        $language = $cookies->getValue('language', 'ru');
+        // an alternative way of getting the "language" cookie value
+        if (($cookie = $cookies->get('language')) !== null) {
+            $language = $cookie->value;
+        }
+        // you may also use $cookies like an array
+        if (isset($cookies['language'])) {
+            $language = $cookies['language']->value;
+        }
+        // check if there is a "language" cookie
+        if ($cookies->has('language')) echo "Current language: $language";
+    }
+
+    public function actionSendCookies() {
+        // get cookies from the "response" component
+        $cookies = Yii::$app->response->cookies;
+        // add a new cookie to the response to be sent
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'language',
+            'value' => 'ru-RU',
+        ]));
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'username',
+            'value' => 'John',
+        ]));
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'country',
+            'value' => 'USA',
+        ]));
+    }
+
+    public function actionUploadImage() {
+        $model = new UploadImageForm();
+        if (Yii::$app->request->isPost) {
+            $model->image = UploadedFile::getInstance($model, 'image');
+            if ($model->upload()) {
+                // file is uploaded successfully
+                echo "File successfully uploaded";
+                return;
+            }
+        }
+        return $this->render('upload', ['model' => $model]);
+    }
+    public function actionFormater(){
+        return $this->render('formatter');
     }
 
 }

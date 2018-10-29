@@ -11,7 +11,8 @@ use yii\bootstrap\Html;
 
 <div class="row">
         <div class="col-lg-5">
-                <?php $form = ActiveForm::begin(['id' => 'registration-form']); ?>
+                <?php $form = ActiveForm::begin(['id' => 'registration-form',
+                    'enableAjaxValidation' => true]); ?>
                 <?= $form->field($model,'username') ?>
                 <?= $form->field($model,'password')->passwordInput() ?>
                 <?= $form->field($model,'email')->input('email') ?>
